@@ -21,43 +21,10 @@ class NBD_MC_Page_Builder {
     }
 
     private function __construct() {
-        // Rendu LIVE du contenu single masterclass : on (re)génère le contenu depuis
-        // les post_meta à chaque affichage. Priorité très haute pour passer APRÈS
-        // Elementor (qui filtre the_content à 10) et garantir un affichage à jour,
-        // sans dépendre d'un _elementor_data figé ni d'une régénération manuelle.
-        add_filter( 'the_content', array( $this, 'maybe_render_live_content' ), 99999 );
-    }
-
-    /**
-     * Si on est sur la page single d'une masterclass (frontend, requête principale),
-     * remplace le contenu par le rendu live construit depuis les méta-données.
-     */
-    public function maybe_render_live_content( $content ) {
-        if ( is_admin() ) return $content;
-        if ( ! is_singular( 'page' ) ) return $content;
-        if ( ! in_the_loop() || ! is_main_query() ) return $content;
-        // Ne pas interférer avec l'éditeur / la preview Elementor
-        if ( isset( $_GET['elementor-preview'] ) || isset( $_GET['elementor_library'] ) ) return $content;
-        if ( did_action( 'elementor/editor/before_enqueue_scripts' ) ) return $content;
-
-        $pid = get_the_ID();
-        if ( ! $pid || get_post_meta( $pid, '_nbd_mc_is_masterclass', true ) !== '1' ) return $content;
-
-        static $rendering = false;
-        if ( $rendering ) return $content; // anti-récursion
-        $rendering = true;
-        try {
-            // Ordre important : blocs Gutenberg d'abord, puis shortcodes
-            // (on est appelé APRÈS le do_shortcode natif de the_content, donc il faut le rejouer)
-            $html = do_blocks( $this->build_post_content_string( $pid ) );
-            $html = do_shortcode( $html );
-        } catch ( \Throwable $e ) {
-            error_log( '[NBD Suite] Live render error post ' . $pid . ' : ' . $e->getMessage() );
-            $rendering = false;
-            return $content; // fallback : contenu stocké
-        }
-        $rendering = false;
-        return $html;
+        // NOTE : pas de filtre the_content live. On régénère le post_content
+        // UNIQUEMENT à la sauvegarde admin (auto-rebuild) ou à la demande
+        // (bouton "Régénérer"). Sinon les édits Gutenberg/Elementor seraient
+        // systématiquement écrasés à chaque affichage.
     }
 
     /**

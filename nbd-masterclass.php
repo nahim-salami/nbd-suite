@@ -3,7 +3,7 @@
  * Plugin Name: NBD Suite
  * Plugin URI: https://naturebiodental-pro.com
  * Description: Suite tout-en-un pour NatureBioDental : gestion des masterclass (avec card sticky d'achat) et des événements (agenda automatique). Édition WordPress + Elementor, SEO et schema.org intégrés.
- * Version: 1.0.3
+ * Version: 1.0.4
  * Author: Nahim Salami
  * Author URI: https://ahime.net
  * Text Domain: nbd-suite
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'NBD_MC_VERSION', '1.0.3' );
+define( 'NBD_MC_VERSION', '1.0.4' );
 define( 'NBD_MC_FILE', __FILE__ );
 define( 'NBD_MC_PATH', plugin_dir_path( __FILE__ ) );
 define( 'NBD_MC_URL', plugin_dir_url( __FILE__ ) );
